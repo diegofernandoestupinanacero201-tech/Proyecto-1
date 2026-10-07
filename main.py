@@ -11,6 +11,16 @@ cubo2 =Actor("cubo",(345,153))
 cubo3 =Actor("cubo",(375,153))
 cubo4 =Actor("cubo",(360,88))
 
+cubos = [cubo, cubo2, cubo3, cubo4]
+golpes_cubo = [
+    {"actor": cubo, "posicion": cubo.y, "velocidad": 0, "activo": False}
+    for cubo in cubos
+]
+suelo_ma = 195
+velocidad_salto = -320
+gravedad = 900
+velocidad_ma_y = 0
+
 
 contador = 0
 mode = "game"
@@ -30,7 +40,28 @@ def draw():
 
 
 def update(dt):
-    global contador,mode
+    global contador,mode,velocidad_ma_y
+
+    parte_superior_anterior = ma.top
+
+    if (keyboard.space or keyboard.up) and ma.y >= suelo_ma:
+        velocidad_ma_y = velocidad_salto
+
+    velocidad_ma_y += gravedad * dt
+    ma.y += velocidad_ma_y * dt
+
+    if ma.y >= suelo_ma:
+        ma.y = suelo_ma
+        velocidad_ma_y = 0
+
+    for golpe in golpes_cubo:
+        if golpe["activo"]:
+            golpe["velocidad"] += gravedad * dt
+            golpe["actor"].y += golpe["velocidad"] * dt
+            if golpe["actor"].y >= golpe["posicion"]:
+                golpe["actor"].y = golpe["posicion"]
+                golpe["velocidad"] = 0
+                golpe["activo"] = False
 
 
     if coopa.x <=0:
@@ -66,6 +97,18 @@ def update(dt):
         # Cuando no se mueve, vuelve al sprite quieto
         ma.image = "m"
         contador = 0
+
+    if velocidad_ma_y < 0:
+        for golpe in golpes_cubo:
+            actor_cubo = golpe["actor"]
+            if (parte_superior_anterior >= actor_cubo.bottom
+                    and ma.top <= actor_cubo.bottom
+                    and ma.colliderect(actor_cubo)):
+                ma.y = actor_cubo.bottom + ma.height / 2
+                velocidad_ma_y = 0
+                golpe["velocidad"] = -190
+                golpe["activo"] = True
+                break
 
     if ma.colliderect(coopa):
         mode = "end"
