@@ -6,6 +6,8 @@ FPS = 30
 background = Actor("mundomario1")
 ma = Actor("m", (50, 195))
 coopa = Actor("coopa", (400,200))
+coopa_estado = "normal"
+tiempo_coopa = 0
 cubo = Actor("cubo", (265,153))
 cubo2 =Actor("cubo",(345,153))
 cubo3 =Actor("cubo",(375,153))
@@ -57,8 +59,10 @@ def draw():
 
 def update(dt):
     global contador,mode,velocidad_ma_y,camera_x,posicion_camara
+    global coopa_estado,tiempo_coopa
 
     parte_superior_anterior = ma.top
+    parte_inferior_anterior = ma.bottom
 
     if (keyboard.space or keyboard.up) and ma.y >= suelo_ma:
         velocidad_ma_y = velocidad_salto
@@ -80,10 +84,21 @@ def update(dt):
                 golpe["activo"] = False
 
 
-    if coopa.x <=0:
-        coopa.x =400
+    if coopa_estado == "normal":
+        if coopa.x <=0:
+            coopa.x =400
+        else:
+            coopa.x -=1
     else:
-        coopa.x -=1
+        tiempo_coopa -= dt
+        if coopa_estado == "aplastado" and tiempo_coopa <= 0:
+            coopa.x = -1000
+            coopa_estado = "esperando"
+            tiempo_coopa = 1
+        elif coopa_estado == "esperando" and tiempo_coopa <= 0:
+            coopa.image = "coopa"
+            coopa.x = 400
+            coopa_estado = "normal"
 
 
     if keyboard.right:
@@ -157,5 +172,14 @@ def update(dt):
                 golpe["activo"] = True
                 break
 
-    if ma.colliderect(coopa):
-        mode = "end"
+    if coopa_estado == "normal" and ma.colliderect(coopa):
+        if (velocidad_ma_y > 0
+                and parte_inferior_anterior <= coopa.top
+                and ma.bottom >= coopa.top):
+            ma.bottom = coopa.top
+            velocidad_ma_y = velocidad_salto
+            coopa.image = "coopaes"
+            coopa_estado = "aplastado"
+            tiempo_coopa = 0.35
+        else:
+            mode = "end"
