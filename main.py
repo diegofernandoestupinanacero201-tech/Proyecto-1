@@ -10,6 +10,13 @@ cubo = Actor("cubo", (265,153))
 cubo2 =Actor("cubo",(345,153))
 cubo3 =Actor("cubo",(375,153))
 cubo4 =Actor("cubo",(360,88))
+hongo =Actor("hongo")
+moneda = Actor("moneda")
+moneda2 =Actor("moneda")
+moneda3 =Actor("moneda")
+moneda4 =Actor("moneda")
+moneda.pos = cubo.pos
+hongo.pos = cubo3.pos
 camera_x =0
 posicion_camara = WIDTH / 2
 cubos = [cubo, cubo2, cubo3, cubo4]
@@ -31,10 +38,16 @@ def draw():
         background.draw()
         ma.draw()
         coopa.draw()
+        moneda.draw()
+        moneda2.draw()
+        moneda3.draw()
+        moneda4.draw()
         cubo.draw()
         cubo2.draw()
+        hongo.draw()
         cubo3.draw()
         cubo4.draw()
+
     elif mode == "end":
        screen.fill ("black")
        screen.draw.text("GAME OVER",pos=(100,100),color="white",fontsize=30)
@@ -72,7 +85,7 @@ def update(dt):
 
 
     if keyboard.right:
-        ma.x += 5
+        ma.x += 3
         limite_camara = background.width - WIDTH
         if ma.x > posicion_camara and camera_x < limite_camara:
             desplazamiento = min(ma.x - posicion_camara, limite_camara - camera_x)
@@ -80,6 +93,8 @@ def update(dt):
             camera_x += desplazamiento
             background.x -= desplazamiento
             coopa.x -= desplazamiento
+            moneda.x -=desplazamiento
+            hongo.x -=desplazamiento
             for cubo in cubos:
                 cubo.x -= desplazamiento
 
@@ -96,7 +111,20 @@ def update(dt):
             else:
                 ma.image = "mario1"
     elif keyboard.left:
-        ma.x -= 5
+        ma.x -= 3
+        if ma.x < posicion_camara and camera_x > 0:
+            desplazamiento = min(posicion_camara - ma.x, camera_x)
+            ma.x += desplazamiento
+            camera_x -= desplazamiento
+            background.x += desplazamiento
+            coopa.x += desplazamiento
+            moneda.x +=desplazamiento
+            hongo.x +=desplazamiento
+            for cubo in cubos:
+                cubo.x += desplazamiento
+
+        if camera_x <= 0:
+            ma.x = max(ma.x, ma.width / 2)
         contador += 1
 
         if contador >= 5:
