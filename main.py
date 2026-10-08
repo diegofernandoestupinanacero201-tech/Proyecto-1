@@ -10,7 +10,8 @@ cubo = Actor("cubo", (265,153))
 cubo2 =Actor("cubo",(345,153))
 cubo3 =Actor("cubo",(375,153))
 cubo4 =Actor("cubo",(360,88))
-
+camera_x =0
+posicion_camara = WIDTH / 2
 cubos = [cubo, cubo2, cubo3, cubo4]
 golpes_cubo = [
     {"actor": cubo, "posicion": cubo.y, "velocidad": 0, "activo": False}
@@ -40,7 +41,7 @@ def draw():
 
 
 def update(dt):
-    global contador,mode,velocidad_ma_y
+    global contador,mode,velocidad_ma_y,camera_x,posicion_camara
 
     parte_superior_anterior = ma.top
 
@@ -72,6 +73,18 @@ def update(dt):
 
     if keyboard.right:
         ma.x += 5
+        limite_camara = background.width - WIDTH
+        if ma.x > posicion_camara and camera_x < limite_camara:
+            desplazamiento = min(ma.x - posicion_camara, limite_camara - camera_x)
+            ma.x -= desplazamiento
+            camera_x += desplazamiento
+            background.x -= desplazamiento
+            coopa.x -= desplazamiento
+            for cubo in cubos:
+                cubo.x -= desplazamiento
+
+        if camera_x >= limite_camara:
+            ma.x = min(ma.x, WIDTH - ma.width / 2)
 
         contador += 1
 
