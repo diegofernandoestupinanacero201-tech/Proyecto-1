@@ -16,6 +16,8 @@ moneda2 =Actor("moneda")
 moneda3 =Actor("moneda")
 moneda4 =Actor("moneda")
 moneda.pos = cubo.pos
+moneda2.pos = cubo2.pos
+moneda3.pos = cubo4.pos
 hongo.pos = cubo3.pos
 camera_x =0
 posicion_camara = WIDTH / 2
@@ -95,6 +97,8 @@ def update(dt):
             coopa.x -= desplazamiento
             moneda.x -=desplazamiento
             hongo.x -=desplazamiento
+            moneda2.x -=desplazamiento
+            moneda3.x -=desplazamiento
             for cubo in cubos:
                 cubo.x -= desplazamiento
 
@@ -120,6 +124,8 @@ def update(dt):
             coopa.x += desplazamiento
             moneda.x +=desplazamiento
             hongo.x +=desplazamiento
+            moneda2.x +=desplazamiento
+            moneda3.x +=desplazamiento
             for cubo in cubos:
                 cubo.x += desplazamiento
 
